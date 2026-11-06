@@ -12,7 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
+import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/today'
+import { Route as AuthenticatedWorkoutIdRouteImport } from './routes/_authenticated/workout.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,40 +32,90 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTodayRoute = AuthenticatedTodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWorkoutIdRoute = AuthenticatedWorkoutIdRouteImport.update({
+  id: '/workout/$id',
+  path: '/workout/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/plan': typeof AuthenticatedPlanRoute
+  '/today': typeof AuthenticatedTodayRoute
+  '/workout/$id': typeof AuthenticatedWorkoutIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/plan': typeof AuthenticatedPlanRoute
+  '/today': typeof AuthenticatedTodayRoute
+  '/workout/$id': typeof AuthenticatedWorkoutIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/plan': typeof AuthenticatedPlanRoute
+  '/_authenticated/today': typeof AuthenticatedTodayRoute
+  '/_authenticated/workout/$id': typeof AuthenticatedWorkoutIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/onboarding'
+    | '/plan'
+    | '/today'
+    | '/workout/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/onboarding'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/onboarding'
+    | '/plan'
+    | '/today'
+    | '/workout/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/_authenticated/plan'
+    | '/_authenticated/today'
+    | '/_authenticated/workout/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,6 +147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -100,15 +161,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/plan': {
+      id: '/_authenticated/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof AuthenticatedPlanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/today': {
+      id: '/_authenticated/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof AuthenticatedTodayRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/workout/$id': {
+      id: '/_authenticated/workout/$id'
+      path: '/workout/$id'
+      fullPath: '/workout/$id'
+      preLoaderRoute: typeof AuthenticatedWorkoutIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
+  AuthenticatedTodayRoute: typeof AuthenticatedTodayRoute
+  AuthenticatedWorkoutIdRoute: typeof AuthenticatedWorkoutIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPlanRoute: AuthenticatedPlanRoute,
+  AuthenticatedTodayRoute: AuthenticatedTodayRoute,
+  AuthenticatedWorkoutIdRoute: AuthenticatedWorkoutIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
