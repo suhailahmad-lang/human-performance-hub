@@ -8,6 +8,13 @@
       "when": 1793958223888,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794017352980,
+      "tag": "0001_secure_ownership_and_atomic_training_saves",
+      "breakpoints": true
     }
   ]
 }

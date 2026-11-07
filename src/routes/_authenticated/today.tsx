@@ -4,7 +4,16 @@ import { Empty, Loading, ErrorState, PageHeader } from "@/components/ui-kit";
 import { todayISO, useActivePlan } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/today")({
-  head: () => ({ meta: [{ title: "Today's Workout — Human Performance AI" }, { name: "description", content: "Your session for today." }] }),
+  head: () => ({
+    meta: [
+      { title: "Today's Workout — Human Performance AI" },
+      { name: "description", content: "Your session for today." },
+      { property: "og:title", content: "Today's Workout — Human Performance AI" },
+      { property: "og:description", content: "Your session for today." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Today,
 });
 
@@ -17,7 +26,14 @@ function Today() {
   return (
     <>
       <PageHeader eyebrow="Today" title="Rest day" />
-      <Empty title="No session planned today" action={<Button variant="outline" asChild><Link to="/plan">View weekly plan</Link></Button>}>
+      <Empty
+        title="No session planned today"
+        action={
+          <Button variant="outline" asChild>
+            <Link to="/plan">View weekly plan</Link>
+          </Button>
+        }
+      >
         Recovery is part of training. Try a recovery walk or box breathing from the library.
       </Empty>
     </>

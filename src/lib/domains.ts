@@ -35,20 +35,108 @@ export interface Domain {
 }
 
 export const DOMAINS: Domain[] = [
-  { id: "strength", name: "Strength Training", short: "Strength", icon: Dumbbell, demanding: false, description: "Loaded lifts to build force production and resilient tissue." },
-  { id: "calisthenics", name: "Calisthenics", short: "Calisthenics", icon: PersonStanding, demanding: false, description: "Bodyweight strength and control, progressed by leverage." },
-  { id: "sprint", name: "Sprint Training", short: "Sprint", icon: Zap, demanding: true, description: "Acceleration and top-speed mechanics with full recovery." },
-  { id: "endurance", name: "Endurance Training", short: "Endurance", icon: Timer, demanding: false, description: "Aerobic base and sustained effort for long-duration work." },
-  { id: "combat", name: "Martial Arts / Combat Fitness", short: "Combat", icon: Shield, demanding: true, description: "Footwork, striking-pad and bag conditioning for skill fitness." },
-  { id: "mobility", name: "Mobility Training", short: "Mobility", icon: Move, demanding: false, description: "Joint range and control to move well and train longer." },
-  { id: "plyometrics", name: "Plyometrics", short: "Plyo", icon: ArrowUpFromLine, demanding: true, description: "Jumps and bounds for elastic power and landing skill." },
-  { id: "cardio", name: "Cardio", short: "Cardio", icon: HeartPulse, demanding: false, description: "Heart-rate work for fitness, health and work capacity." },
-  { id: "yoga", name: "Yoga & Pranayama", short: "Yoga", icon: Flower2, demanding: false, description: "Breath-led movement practice for balance and calm." },
-  { id: "recovery", name: "Meditation / Recovery", short: "Recovery", icon: Moon, demanding: false, description: "Downshift, breathe and recover between hard days." },
+  {
+    id: "strength",
+    name: "Strength Training",
+    short: "Strength",
+    icon: Dumbbell,
+    demanding: false,
+    description: "Loaded lifts to build force production and resilient tissue.",
+  },
+  {
+    id: "calisthenics",
+    name: "Calisthenics",
+    short: "Calisthenics",
+    icon: PersonStanding,
+    demanding: false,
+    description: "Bodyweight strength and control, progressed by leverage.",
+  },
+  {
+    id: "sprint",
+    name: "Sprint Training",
+    short: "Sprint",
+    icon: Zap,
+    demanding: true,
+    description: "Acceleration and top-speed mechanics with full recovery.",
+  },
+  {
+    id: "endurance",
+    name: "Endurance Training",
+    short: "Endurance",
+    icon: Timer,
+    demanding: false,
+    description: "Aerobic base and sustained effort for long-duration work.",
+  },
+  {
+    id: "combat",
+    name: "Martial Arts / Combat Fitness",
+    short: "Combat",
+    icon: Shield,
+    demanding: true,
+    description: "Footwork, striking-pad and bag conditioning for skill fitness.",
+  },
+  {
+    id: "mobility",
+    name: "Mobility Training",
+    short: "Mobility",
+    icon: Move,
+    demanding: false,
+    description: "Joint range and control to move well and train longer.",
+  },
+  {
+    id: "plyometrics",
+    name: "Plyometrics",
+    short: "Plyo",
+    icon: ArrowUpFromLine,
+    demanding: true,
+    description: "Jumps and bounds for elastic power and landing skill.",
+  },
+  {
+    id: "cardio",
+    name: "Cardio",
+    short: "Cardio",
+    icon: HeartPulse,
+    demanding: false,
+    description: "Heart-rate work for fitness, health and work capacity.",
+  },
+  {
+    id: "yoga",
+    name: "Yoga & Pranayama",
+    short: "Yoga",
+    icon: Flower2,
+    demanding: false,
+    description: "Breath-led movement practice for balance and calm.",
+  },
+  {
+    id: "recovery",
+    name: "Meditation / Recovery",
+    short: "Recovery",
+    icon: Moon,
+    demanding: false,
+    description: "Downshift, breathe and recover between hard days.",
+  },
 ];
 
-export const domainById = (id: string): Domain =>
-  DOMAINS.find((d) => d.id === id) ?? DOMAINS[0];
+export const domainById = (id: string): Domain => {
+  const domain = DOMAINS.find((d) => d.id === id) ?? DOMAINS[0];
+  if (!domain) throw new Error("Training domains unavailable");
+  return domain;
+};
+
+export const isDomainId = (id: string): id is DomainId => DOMAINS.some((d) => d.id === id);
+
+// These catalogue entries list alternatives; other multi-item entries require all items.
+export const ALTERNATIVE_EQUIPMENT_SLUGS = new Set([
+  "goblet-squat",
+  "romanian-deadlift",
+  "overhead-press",
+  "inverted-row",
+]);
+export function equipmentMatches(slug: string, equipment: string[], owned: Set<string>) {
+  return ALTERNATIVE_EQUIPMENT_SLUGS.has(slug)
+    ? equipment.some((item) => owned.has(item))
+    : equipment.every((item) => owned.has(item));
+}
 
 export const GOALS = [
   { id: "strength", label: "Get stronger" },

@@ -107,6 +107,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "planned_workouts_owned_parent"
+            columns: ["plan_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "training_plans"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
             foreignKeyName: "planned_workouts_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
@@ -253,6 +260,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "set_logs_owned_parent"
+            columns: ["session_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "workout_sessions"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
             foreignKeyName: "set_logs_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
@@ -333,6 +347,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "workout_sessions_owned_parent"
+            columns: ["planned_workout_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "planned_workouts"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
             foreignKeyName: "workout_sessions_planned_workout_id_fkey"
             columns: ["planned_workout_id"]
             isOneToOne: false
@@ -346,7 +367,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      finish_workout: {
+        Args: {
+          p_date: string
+          p_duration: number
+          p_notes: string
+          p_rpe: number
+          p_sets: Json
+          p_status: string
+          p_workout: string
+        }
+        Returns: string
+      }
+      replace_training_plan: {
+        Args: {
+          p_days: Json
+          p_rationale: string[]
+          p_safety: string[]
+          p_start: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

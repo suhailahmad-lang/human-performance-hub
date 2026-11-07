@@ -1,4 +1,5 @@
 <!-- LOVABLE:BEGIN -->
+
 > [!IMPORTANT]
 > This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
 > published git history — force pushing, or rebasing/amending/squashing commits
@@ -27,4 +28,10 @@ use the editor.
   `LOVABLE_API_KEY`. When Lovable does not provide one, users can bring their
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
+
 <!-- LOVABLE:END -->
+
+- Training-plan replacement and workout completion run in authenticated server functions calling security-invoker transactional database functions; this prevents partial saves and derives ownership from the verified session.
+- Child-parent relationships use composite owner foreign keys plus RLS; this prevents cross-account linking and owner reassignment.
+- Equipment arrays require every item except explicitly catalogued alternative-equipment exercises; this preserves alternatives without prescribing unavailable combinations.
+- Clear private query data on identity transitions, keeping public catalogue cache separate; this prevents account-switch data leakage.
