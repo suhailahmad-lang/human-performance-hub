@@ -1,5 +1,32 @@
-import { useState } from "react";
-import { MessageCircle, Minus, Sparkles, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MessageCircle, Mic, MicOff, Minus, Sparkles, Volume2, X } from "lucide-react";
+
+interface SpeechResultEvent {
+  results: ArrayLike<ArrayLike<{ transcript: string }>>;
+}
+
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: SpeechResultEvent) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
+
+function getSpeechRecognition() {
+  if (typeof window === "undefined") return null;
+  const browserWindow = window as Window & {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  };
+  const Recognition = browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
+  return Recognition ? new Recognition() : null;
+}
 
 interface VirtualCompanionProps {
   pathname: string;
@@ -29,7 +56,64 @@ function companionMessage(pathname: string) {
 export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
   const [open, setOpen] = useState(true);
   const [dismissed, setDismissed] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [listening, setListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState("Voice input is available in supported browsers.");
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const message = companionMessage(pathname);
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+      if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  function toggleListening() {
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = getSpeechRecognition();
+    if (!recognition) {
+      setVoiceStatus("Voice input is not supported in this browser. Try a recent Chrome or Edge browser.");
+      return;
+    }
+
+    recognition.lang = "en-IN";
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0]?.transcript ?? "")
+        .join(" ");
+      setDraft(transcript.trim());
+    };
+    recognition.onerror = () => {
+      setVoiceStatus("Microphone access or speech recognition failed. Check browser permissions.");
+      setListening(false);
+    };
+    recognition.onend = () => setListening(false);
+    recognitionRef.current = recognition;
+    setVoiceStatus("Listening… speak naturally.");
+    setListening(true);
+    recognition.start();
+  }
+
+  function speakGreeting() {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      setVoiceStatus("Speech playback is not supported in this browser.");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = "en-IN";
+    utterance.rate = 0.96;
+    window.speechSynthesis.speak(utterance);
+    setVoiceStatus("Playing the browser's available voice. A dedicated NOVA voice is still being integrated.");
+  }
 
   if (dismissed) {
     return (
@@ -90,7 +174,37 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
             </div>
             <div className="min-w-0">
               <p className="text-sm leading-relaxed text-foreground">{message}</p>
-              <p className="mt-2 text-[10px] text-muted-foreground">Smart, friendly conversations · Voice coming next</p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={speakGreeting}
+                  className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-secondary"
+                >
+                  <Volume2 className="size-3" /> Hear NOVA
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className="inline-flex items-center gap-1 rounded-md border border-primary/30 px-2 py-1 text-[10px] text-primary hover:bg-primary/10"
+                  aria-pressed={listening}
+                >
+                  {listening ? <MicOff className="size-3" /> : <Mic className="size-3" />}
+                  {listening ? "Stop" : "Speak"}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-border px-3 py-2">
+            <label htmlFor="nova-voice-draft" className="text-[10px] font-medium text-muted-foreground">Voice transcript preview</label>
+            <textarea
+              id="nova-voice-draft"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder="Your spoken words will appear here…"
+              rows={2}
+              className="mt-1 w-full resize-none rounded-lg border border-border bg-background/70 px-2 py-1.5 text-xs outline-none focus:border-primary"
+            />
+            <p aria-live="polite" className="text-[10px] text-muted-foreground">{voiceStatus} AI conversation connection is the next integration.</p>
             </div>
           </div>
         </section>
