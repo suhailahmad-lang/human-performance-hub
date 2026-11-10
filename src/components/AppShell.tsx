@@ -14,6 +14,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/data";
 import { Logo } from "./Logo";
+import { VirtualCompanion } from "./VirtualCompanion";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -101,6 +102,8 @@ export function AppShell() {
           <Outlet />
         </div>
       </main>
+
+      <VirtualCompanion pathname={location.pathname} />
 
       <nav
         aria-label="Main mobile"
