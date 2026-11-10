@@ -69,7 +69,7 @@ Deno.serve(async (request: Request) => {
   const { data: { user }, error } = await supabase.auth.getUser(token);
   if (error || !user) return json({ error: "Your session is invalid or expired." }, 401);
 
-  let payload: { query?: unknown };
+  let payload: { query?: unknown; page?: unknown };
   try {
     payload = await request.json();
   } catch {
@@ -79,9 +79,14 @@ Deno.serve(async (request: Request) => {
   if (typeof payload.query !== "string" || payload.query.trim().length < 2 || payload.query.length > 100) {
     return json({ error: "Search must contain 2–100 characters." }, 400);
   }
+  const page = payload.page === undefined ? 1 : payload.page;
+  if (typeof page !== "number" || !Number.isInteger(page) || page < 1 || page > 50) {
+    return json({ error: "Page must be an integer between 1 and 50." }, 400);
+  }
 
   try {
-    const upstream = await fetch("https://wger.de/api/v2/exerciseinfo/?limit=100", {
+    const offset = (page - 1) * 100;
+    const upstream = await fetch(`https://wger.de/api/v2/exerciseinfo/?limit=100&offset=${offset}`, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(12_000),
     });
@@ -112,6 +117,7 @@ Deno.serve(async (request: Request) => {
       attribution: "Exercise catalogue and media supplied by wger. Verify each item's displayed licence and author before reuse.",
       providerDocumentation: "https://wger.readthedocs.io/en/latest/api/api.html",
       results,
+      page,
       hasMoreUpstreamResults: Boolean(catalogue.next),
     });
   } catch (error) {
