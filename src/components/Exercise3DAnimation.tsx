@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { createElement, useEffect, useRef, useState, type ElementType, type RefObject } from "react";
 import { Pause, Play, RotateCcw, Gauge, Cuboid } from "lucide-react";
 
 type ModelViewerElement = HTMLElement & {
@@ -175,12 +175,13 @@ function ReactModelViewer({
   animationName?: string;
   ready: boolean;
 }) {
-  const tag = "model-viewer" as React.ElementType;
-  return React.createElement(tag, {
+  const tag = "model-viewer" as ElementType;
+  return createElement(tag, {
     ref: viewerRef,
     src,
     "animation-name": animationName,
     autoplay: true,
+    loop: true,
     "camera-controls": true,
     "shadow-intensity": "0.8",
     exposure: "1",
