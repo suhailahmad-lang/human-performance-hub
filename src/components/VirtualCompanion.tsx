@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { LoaderCircle, MessageCircle, Mic, MicOff, Minus, Send, Sparkles, Volume2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -108,7 +109,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
     recognition.start();
   }
 
-  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
+  async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = draft.trim();
     if (!text || sending) return;
@@ -153,7 +154,8 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
       return;
     }
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(message);
+    const latestReply = [...chatMessages].reverse().find((item) => item.role === "assistant")?.content;
+    const utterance = new SpeechSynthesisUtterance(latestReply ?? message);
     utterance.lang = "en-IN";
     utterance.rate = 0.96;
     window.speechSynthesis.speak(utterance);
