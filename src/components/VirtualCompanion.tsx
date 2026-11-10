@@ -1,0 +1,161 @@
+import { useState } from "react";
+import { MessageCircle, Minus, Sparkles, X } from "lucide-react";
+
+interface VirtualCompanionProps {
+  pathname: string;
+}
+
+function companionMessage(pathname: string) {
+  if (pathname.startsWith("/workout/") || pathname === "/today")
+    return "Ready when you are. I can guide your session and help you keep track of each exercise.";
+  if (pathname.startsWith("/library"))
+    return "Explore an exercise and open its guide to learn the movement safely.";
+  if (pathname.startsWith("/progress"))
+    return "Your progress is about consistency and capability. Let's review your training trends.";
+  if (pathname.startsWith("/plan"))
+    return "Here's your training schedule. Remember, recovery days are part of the plan.";
+  if (pathname.startsWith("/coach"))
+    return "I'm your in-platform companion. The separate AI Coach is available in its own section.";
+  if (pathname.startsWith("/settings"))
+    return "You can review your profile and training preferences here.";
+  return "Welcome back. I'm here to help you navigate your human-performance journey.";
+}
+
+/**
+ * Persistent original virtual companion.
+ * This is the always-visible character shell; voice, lip-sync and 3D animation
+ * are intentionally separate integrations and are not simulated here.
+ */
+export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
+  const [open, setOpen] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
+  const message = companionMessage(pathname);
+
+  if (dismissed) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setDismissed(false);
+          setOpen(true);
+        }}
+        aria-label="Show virtual companion"
+        className="fixed bottom-24 right-4 z-40 grid size-14 place-items-center rounded-full border border-primary/50 bg-card shadow-xl shadow-primary/10 transition hover:scale-105 lg:bottom-5 lg:right-5"
+      >
+        <CompanionAvatar compact />
+      </button>
+    );
+  }
+
+  return (
+    <aside
+      aria-label="Virtual companion"
+      className="fixed bottom-24 right-3 z-40 flex w-[min(19rem,calc(100vw-1.5rem))] flex-col items-end gap-2 lg:bottom-5 lg:right-5"
+    >
+      {open && (
+        <section className="w-full overflow-hidden rounded-2xl border border-primary/25 bg-card/95 shadow-2xl shadow-black/30 backdrop-blur-xl">
+          <header className="flex items-center justify-between border-b border-border px-3 py-2">
+            <div className="flex items-center gap-2">
+              <span className="grid size-7 place-items-center rounded-full bg-primary/15 text-primary">
+                <Sparkles className="size-4" />
+              </span>
+              <div>
+                <p className="text-xs font-semibold">NOVA</p>
+                <p className="text-[10px] text-muted-foreground">Your virtual companion</p>
+              </div>
+              <span className="ml-1 size-2 rounded-full bg-emerald-400" aria-label="Available" />
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="rounded-md p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                aria-label="Minimize companion message"
+              >
+                <Minus className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setDismissed(true)}
+                className="rounded-md p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                aria-label="Hide companion"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </header>
+          <div className="flex items-center gap-3 p-3">
+            <div className="w-[5.5rem] shrink-0">
+              <CompanionAvatar />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm leading-relaxed text-foreground">{message}</p>
+              <p className="mt-2 text-[10px] text-muted-foreground">Context-aware companion · Voice features planned</p>
+            </div>
+          </div>
+        </section>
+      )}
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        className="flex items-center gap-2 rounded-full border border-primary/40 bg-card px-3 py-2 text-xs font-semibold text-foreground shadow-lg transition hover:border-primary hover:shadow-primary/10"
+        aria-expanded={open}
+        aria-label={open ? "Collapse companion" : "Open companion"}
+      >
+        <span className="grid size-8 place-items-center rounded-full bg-primary/10">
+          <CompanionAvatar compact />
+        </span>
+        NOVA
+        <MessageCircle className="size-3.5 text-primary" />
+      </button>
+    </aside>
+  );
+}
+
+function CompanionAvatar({ compact = false }: { compact?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 120 150"
+      role="img"
+      aria-label="NOVA, original anime-inspired virtual companion"
+      className={compact ? "size-7" : "h-auto w-full drop-shadow-[0_8px_18px_rgba(34,211,238,0.16)]"}
+    >
+      <defs>
+        <linearGradient id="nova-hair" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#d8f7ff" />
+          <stop offset="0.55" stopColor="#76d9ee" />
+          <stop offset="1" stopColor="#6677cf" />
+        </linearGradient>
+        <linearGradient id="nova-suit" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#263c61" />
+          <stop offset="1" stopColor="#101a32" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="60" cy="142" rx="34" ry="5" fill="#50d9ec" opacity=".18" />
+      <path d="M29 145 Q31 111 43 103 L77 103 Q91 113 93 145Z" fill="url(#nova-suit)" stroke="#70dced" strokeWidth="1.5" />
+      <path d="M45 104 L60 119 L75 104 L81 145 L39 145Z" fill="#1c2e4e" />
+      <path d="M51 104 L60 120 L69 104" fill="none" stroke="#8df0f5" strokeWidth="2" />
+      <path d="M44 105 L35 116 L43 133 L52 119" fill="#314c76" stroke="#6ed8ec" strokeWidth="1" />
+      <path d="M76 105 L85 116 L77 133 L68 119" fill="#314c76" stroke="#6ed8ec" strokeWidth="1" />
+      <path d="M42 44 Q39 14 64 12 Q91 14 86 54 L82 88 Q77 105 60 106 Q42 102 37 82Z" fill="url(#nova-hair)" />
+      <path d="M39 55 Q29 27 48 17 Q64 2 82 18 Q99 31 85 62 Q81 42 68 34 Q59 49 42 54Z" fill="#a6eff8" stroke="#d9fbff" strokeWidth="1" />
+      <path d="M41 48 Q29 55 35 82 Q39 96 48 100 L46 71Z" fill="#78d8ed" />
+      <path d="M82 45 Q96 55 87 88 Q83 98 75 102 L77 68Z" fill="#617bd1" />
+      <ellipse cx="60" cy="62" rx="23" ry="29" fill="#f5d9d3" />
+      <path d="M38 54 Q42 34 59 34 Q77 35 83 53 Q72 45 65 45 Q53 53 38 54Z" fill="url(#nova-hair)" />
+      <path d="M42 61 Q49 56 55 62" fill="none" stroke="#34476d" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M66 62 Q73 56 79 61" fill="none" stroke="#34476d" strokeWidth="2.2" strokeLinecap="round" />
+      <ellipse cx="50" cy="67" rx="3.4" ry="5" fill="#4aaecb" />
+      <ellipse cx="71" cy="67" rx="3.4" ry="5" fill="#4aaecb" />
+      <circle cx="51" cy="65" r="1.2" fill="white" />
+      <circle cx="72" cy="65" r="1.2" fill="white" />
+      <path d="M58 76 Q61 79 64 76" fill="none" stroke="#bd7b83" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M51 86 Q60 91 69 86" fill="none" stroke="#c77d89" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M36 55 Q27 36 40 19 Q50 3 68 9 Q89 11 93 34 Q83 25 78 23 Q69 39 51 42 Q43 47 36 55Z" fill="url(#nova-hair)" stroke="#d8faff" strokeWidth="1" />
+      <path d="M39 25 Q28 42 34 66" fill="none" stroke="#f2ffff" strokeWidth="2" opacity=".8" />
+      <path d="M82 28 Q91 43 84 60" fill="none" stroke="#b8f6ff" strokeWidth="2" opacity=".8" />
+      <path d="M54 120 L60 127 L66 120" fill="none" stroke="#8df0f5" strokeWidth="2" />
+      <circle cx="60" cy="133" r="3" fill="#9af4f7" />
+    </svg>
+  );
+}
