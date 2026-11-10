@@ -55,7 +55,7 @@ The 3D Jutsu export endpoint currently supplies a short-lived signed download UR
 
 ## Armature-rigged air-squat prototype — 10 Nov 2026
 
-- 3D Jutsu project revision: 2
+- 3D Jutsu project revision: 3
 - Rig object: `RIG_HUMANOID`
 - Deforming mesh: `HERO_RIGGED_BODY` (2,886 vertices)
 - Skeleton: 14 deform bones and 5 non-deforming controls
@@ -66,4 +66,4 @@ The 3D Jutsu export endpoint currently supplies a short-lived signed download UR
 
 The rig structure and animation data were verified numerically in Blender 5.2. The three rendered review frames were generated, but the signed preview images could not be retrieved for visual inspection in this session. Therefore silhouette, joint deformation, knee path, floor contact and loop appearance are **not visually approved**. Do not register this GLB as a production exercise asset until those checks pass and a durable storage URL is available.
 
-The original independently animated source parts remain hidden as a reference; the joined weighted mesh and armature are the new rigged prototype.
+The 13 independently animated source meshes were removed from the active scene after the rigged mesh was verified. The exported GLB now contains the floor and the single weighted rigged body rather than duplicate source geometry. Revision 2 remains available in project history.
