@@ -43,6 +43,20 @@ const schema = z.object({
   limitations: z.string().max(500).nullable(),
 });
 
+const assessmentSteps = [
+  { title: "About you", detail: "A few basics to tailor your starting point." },
+  { title: "Training baseline", detail: "Your current experience and activity." },
+  { title: "Your goals", detail: "Choose the outcome that matters most." },
+  { title: "Your routine", detail: "Set a schedule and available equipment." },
+] as const;
+
+const stepSchemas = [
+  schema.pick({ display_name: true, age_range: true }),
+  schema.pick({ experience: true, activity_level: true, limitations: true }),
+  schema.pick({ primary_goal: true }),
+  schema.pick({ days_per_week: true, session_minutes: true }),
+];
+
 function Chip({
   active,
   onClick,
@@ -98,10 +112,12 @@ export function ProfileForm({
   initial,
   submitLabel,
   onSubmit,
+  wizard = false,
 }: {
   initial: Partial<ProfileInput>;
   submitLabel: string;
   onSubmit: (v: ProfileInput) => Promise<void>;
+  wizard?: boolean;
 }) {
   const [v, setV] = useState<ProfileInput>({
     display_name: initial.display_name ?? "",
@@ -121,6 +137,7 @@ export function ProfileForm({
     limitations: initial.limitations ?? "",
   });
   const [busy, setBusy] = useState(false);
+  const [step, setStep] = useState(0);
   const set = <K extends keyof ProfileInput>(k: K, val: ProfileInput[K]) =>
     setV((s) => ({ ...s, [k]: val }));
 
@@ -148,8 +165,43 @@ export function ProfileForm({
 
   const sectionCls = "space-y-5 rounded-xl border border-border bg-card p-5 sm:p-6";
 
+  function continueAssessment() {
+    const validation = stepSchemas[step]?.safeParse({
+      ...v,
+      limitations: v.limitations || null,
+    });
+    if (!validation?.success) {
+      toast.error(validation?.error.issues[0]?.message ?? "Complete this step first");
+      return;
+    }
+    setStep((current) => Math.min(current + 1, assessmentSteps.length - 1));
+  }
+
   return (
     <form onSubmit={submit} className="space-y-6">
+      {wizard && (
+        <div className="space-y-3 rounded-xl border border-border bg-card/60 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="eyebrow">PERSONALIZED ASSESSMENT</p>
+              <h2 className="mt-1 text-lg font-semibold">{assessmentSteps[step]?.title}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{assessmentSteps[step]?.detail}</p>
+            </div>
+            <span className="shrink-0 text-sm font-medium tabular-nums text-primary">
+              {step + 1} / {assessmentSteps.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-1.5" aria-label="Assessment progress">
+            {assessmentSteps.map((item, index) => (
+              <div
+                key={item.title}
+                className={cn("h-1.5 rounded-full", index <= step ? "bg-primary" : "bg-secondary")}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {(!wizard || step === 0) && (
       <section className={sectionCls}>
         <p className="eyebrow">01 · About you</p>
         <Field label="Display name">
@@ -198,7 +250,9 @@ export function ProfileForm({
           </Field>
         </div>
       </section>
+      )}
 
+      {(!wizard || step === 1) && (
       <section className={sectionCls}>
         <p className="eyebrow">02 · Baseline</p>
         <Field label="Experience level">
@@ -236,7 +290,9 @@ export function ProfileForm({
           />
         </Field>
       </section>
+      )}
 
+      {(!wizard || step === 2) && (
       <section className={sectionCls}>
         <p className="eyebrow">03 · Goals</p>
         <Field label="Primary goal">
@@ -279,7 +335,9 @@ export function ProfileForm({
           </div>
         </Field>
       </section>
+      )}
 
+      {(!wizard || step === 3) && (
       <section className={sectionCls}>
         <p className="eyebrow">04 · Schedule & setup</p>
         <div className="grid gap-5 sm:grid-cols-2">
@@ -334,10 +392,24 @@ export function ProfileForm({
           </div>
         </Field>
       </section>
+      )}
 
-      <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto" disabled={busy}>
-        {busy ? "Saving…" : submitLabel}
-      </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {wizard && step > 0 ? (
+          <Button type="button" variant="outline" onClick={() => setStep((current) => current - 1)}>
+            Back
+          </Button>
+        ) : <span />}
+        {wizard && step < assessmentSteps.length - 1 ? (
+          <Button type="button" variant="hero" size="lg" onClick={continueAssessment}>
+            Continue
+          </Button>
+        ) : (
+          <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto" disabled={busy}>
+            {busy ? "Saving…" : submitLabel}
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
