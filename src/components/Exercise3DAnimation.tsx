@@ -100,7 +100,7 @@ export function Exercise3DAnimation({
           <p className="eyebrow">Interactive movement lab</p>
           <h2 className="mt-1 text-lg font-semibold">3D exercise demonstration</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Exercise-specific rigged character animation for {exerciseName}.
+            Exercise-specific 3D movement preview for {exerciseName}.
           </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-3 py-1 text-xs text-primary">
@@ -180,7 +180,7 @@ function ReactModelViewer({
     ref: viewerRef,
     src,
     "animation-name": animationName,
-    autoplay: true,
+    autoplay: false,
     loop: true,
     "camera-controls": true,
     "shadow-intensity": "0.8",
