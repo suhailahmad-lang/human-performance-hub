@@ -38,7 +38,7 @@ export function LiveExerciseMediaPanel({ exerciseName }: LiveExerciseMediaPanelP
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            Verified external catalogue
+            Live external catalogue
           </p>
           <h2 className="mt-1 text-lg font-semibold">Exercise images & demonstrations</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -106,9 +106,9 @@ export function LiveExerciseMediaPanel({ exerciseName }: LiveExerciseMediaPanelP
               const videos = item.videos.filter((asset) => asset.video || asset.url);
               return (
                 <article key={item.providerExerciseId} className="overflow-hidden rounded-lg border border-border">
-                  {item.images.length > 0 ? (
+                  {item.images.some((asset) => asset.image || asset.url) ? (
                     <div className="grid grid-cols-2 gap-1 bg-muted p-1">
-                      {item.images.slice(0, 2).map((asset, index) => (
+                      {item.images.filter((asset) => asset.image || asset.url).slice(0, 2).map((asset, index) => (
                         <a
                           key={asset.id ?? asset.image ?? index}
                           href={asset.image ?? asset.url}
