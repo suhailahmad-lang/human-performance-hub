@@ -38,14 +38,14 @@ export function Exercise3DAnimation({
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const asset = EXERCISE_3D_ASSETS[exerciseSlug];
+  const assetSrc = asset?.src;
 
   useEffect(() => {
     // Do not download the viewer runtime on exercise pages that have no
     // verified, durable GLB asset registered yet.
-    if (!asset) return;
+    if (!assetSrc) return;
 
     let cancelled = false;
-    let timeoutId: number | undefined;
     const existing = document.querySelector<HTMLScriptElement>(
       'script[data-exercise-model-viewer="true"]',
     );
@@ -66,7 +66,7 @@ export function Exercise3DAnimation({
 
     setViewerReady(false);
     setViewerError(false);
-    timeoutId = window.setTimeout(markFailed, 15_000);
+    const timeoutId = window.setTimeout(markFailed, 15_000);
 
     if (customElements.get("model-viewer")) {
       markReady();
@@ -88,11 +88,11 @@ export function Exercise3DAnimation({
 
     return () => {
       cancelled = true;
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId);
       existing?.removeEventListener("load", onScriptLoad);
       existing?.removeEventListener("error", markFailed);
     };
-  }, [asset?.src]);
+  }, [assetSrc]);
 
   useEffect(() => {
     setPlaying(false);
