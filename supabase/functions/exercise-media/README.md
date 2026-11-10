@@ -20,7 +20,7 @@ Authenticated POST request:
 
 ## Media and attribution
 
-Media URLs and per-asset licence/author metadata are passed through from wger; the exercise detail UI displays available images, demo links, source links, and licence/author information. Do not copy media into the platform or remove attribution without checking the individual asset's reuse terms.
+Media URLs and per-asset licence/author metadata are passed through from wger for catalogue research only. They are not used as the platform's exercise demonstration experience. The exercise detail UI uses a dedicated 3D animation viewer and must not substitute external video links for a missing animation asset. Do not copy upstream media into the platform or remove attribution without checking the individual asset's reuse terms.
 
 The upstream API provides the expanded exercise information representation with related images and videos. See https://wger.readthedocs.io/en/latest/api/api.html
 
