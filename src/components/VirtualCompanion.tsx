@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, Mic, MicOff, Minus, Sparkles, Volume2, X } from "lucide-react";
+import { LoaderCircle, MessageCircle, Mic, MicOff, Minus, Send, Sparkles, Volume2, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SpeechResultEvent {
   results: ArrayLike<ArrayLike<{ transcript: string }>>;
@@ -27,6 +28,8 @@ function getSpeechRecognition() {
   const Recognition = browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
   return Recognition ? new Recognition() : null;
 }
+
+type CompanionChatMessage = { role: "user" | "assistant"; content: string };
 
 interface VirtualCompanionProps {
   pathname: string;
@@ -59,6 +62,9 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("Voice input is available in supported browsers.");
+  const [chatMessages, setChatMessages] = useState<CompanionChatMessage[]>([]);
+  const [sending, setSending] = useState(false);
+  const [chatError, setChatError] = useState("");
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const message = companionMessage(pathname);
 
@@ -100,6 +106,45 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
     setVoiceStatus("Listening… speak naturally.");
     setListening(true);
     recognition.start();
+  }
+
+  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const text = draft.trim();
+    if (!text || sending) return;
+
+    const nextMessages: CompanionChatMessage[] = [
+      ...chatMessages,
+      { role: "user", content: text },
+    ].slice(-12);
+    setChatMessages(nextMessages);
+    setDraft("");
+    setChatError("");
+    setSending(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("nova-chat", {
+        body: { messages: nextMessages },
+      });
+      if (error) throw error;
+      if (!data || typeof data.reply !== "string") {
+        throw new Error("NOVA returned an invalid response.");
+      }
+      setChatMessages((current) => [
+        ...current,
+        { role: "assistant", content: data.reply },
+      ].slice(-12));
+    } catch (error) {
+      console.error("NOVA chat failed:", error);
+      setChatError(
+        error instanceof Error
+          ? error.message
+          : "NOVA could not reply. Check your connection and sign-in.",
+      );
+      setDraft(text);
+    } finally {
+      setSending(false);
+    }
   }
 
   function speakGreeting() {
@@ -195,17 +240,49 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
             </div>
           </div>
           <div className="border-t border-border px-3 py-2">
-            <label htmlFor="nova-voice-draft" className="text-[10px] font-medium text-muted-foreground">Voice transcript preview</label>
-            <textarea
-              id="nova-voice-draft"
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder="Your spoken words will appear here…"
-              rows={2}
-              className="mt-1 w-full resize-none rounded-lg border border-border bg-background/70 px-2 py-1.5 text-xs outline-none focus:border-primary"
-            />
-            <p aria-live="polite" className="text-[10px] text-muted-foreground">{voiceStatus} AI conversation connection is the next integration.</p>
+            <div aria-live="polite" className="mb-2 max-h-40 space-y-2 overflow-y-auto">
+              {chatMessages.length === 0 ? (
+                <p className="text-[10px] text-muted-foreground">
+                  Say hello or ask me something. NOVA is an AI companion, not a human.
+                </p>
+              ) : (
+                chatMessages.map((item, index) => (
+                  <div
+                    key={`${item.role}-${index}`}
+                    className={item.role === "user" ? "ml-5 rounded-lg bg-primary/10 px-2 py-1.5 text-xs" : "mr-3 rounded-lg bg-secondary px-2 py-1.5 text-xs"}
+                  >
+                    <span className="mb-0.5 block text-[9px] font-semibold text-muted-foreground">
+                      {item.role === "user" ? "YOU" : "NOVA"}
+                    </span>
+                    {item.content}
+                  </div>
+                ))
+              )}
             </div>
+            <form onSubmit={sendMessage} className="space-y-2">
+              <label htmlFor="nova-voice-draft" className="text-[10px] font-medium text-muted-foreground">Message NOVA</label>
+              <textarea
+                id="nova-voice-draft"
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                placeholder="Speak or type a message…"
+                rows={2}
+                maxLength={1500}
+                className="w-full resize-none rounded-lg border border-border bg-background/70 px-2 py-1.5 text-xs outline-none focus:border-primary"
+              />
+              <div className="flex items-center justify-between gap-2">
+                <p aria-live="polite" className="min-w-0 text-[10px] text-muted-foreground">{voiceStatus}</p>
+                <button
+                  type="submit"
+                  disabled={!draft.trim() || sending}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {sending ? <LoaderCircle className="size-3 animate-spin" /> : <Send className="size-3" />}
+                  {sending ? "Replying" : "Send"}
+                </button>
+              </div>
+              {chatError && <p role="alert" className="text-[10px] text-destructive">{chatError}</p>}
+            </form>
           </div>
         </section>
       )}
