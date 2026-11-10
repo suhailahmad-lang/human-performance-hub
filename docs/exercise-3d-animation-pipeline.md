@@ -41,3 +41,14 @@ This is a first movement prototype, not a final anatomically detailed character 
 6. Confirm the embedded viewer plays, pauses, loops and changes speed on desktop and mobile.
 
 Until all gates pass, the exercise must show an honest “3D movement asset pending” state rather than a video link or an unrelated animation.
+
+
+## Rig structure audit — 10 Nov 2026
+
+A structural inspection of the Air Squat scene confirmed 13 animated mesh objects and 13 object-level actions, but **zero armature objects**. The body segments are independent animated meshes with no parent hierarchy. This is useful for a first blocking prototype, but it is not a skeletal character rig and should not be treated as a production movement model.
+
+The next character milestone is a proper humanoid armature with named joints, weighted/deforming mesh geometry, and exercise motion clips driven by the rig. Validate the rest pose, joint axes, deformation, planted contacts and loop continuity before registering any exercise asset.
+
+## Asset delivery boundary
+
+The 3D Jutsu export endpoint currently supplies a short-lived signed download URL. The app must use a durable storage URL; the expiring URL must never be added to `EXERCISE_3D_ASSETS`. No exercise GLB is registered in the app until the durable upload and viewer playback are both verified.
