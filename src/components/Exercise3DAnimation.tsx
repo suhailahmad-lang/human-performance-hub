@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Pause, Play, RotateCcw, Gauge, Cuboid } from "lucide-react";
 
 type ModelViewerElement = HTMLElement & {
@@ -7,6 +7,7 @@ type ModelViewerElement = HTMLElement & {
   currentTime?: number;
   duration?: number;
   animationName?: string;
+  playbackRate?: number;
 };
 
 interface Exercise3DAnimationProps {
@@ -169,7 +170,7 @@ function ReactModelViewer({
   animationName,
   ready,
 }: {
-  viewerRef: React.RefObject<ModelViewerElement | null>;
+  viewerRef: RefObject<ModelViewerElement | null>;
   src: string;
   animationName?: string;
   ready: boolean;
