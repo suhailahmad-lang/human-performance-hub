@@ -40,6 +40,11 @@ Deno.serve(async (request: Request) => {
   const { data: { user }, error: authError } = await supabase.auth.getUser(token);
   if (authError || !user) return json({ error: "Your session is invalid or expired. Please sign in again." }, 401);
 
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > 20_000) {
+    return json({ error: "The chat request is too large." }, 413);
+  }
+
   let payload: { messages?: unknown };
   try {
     payload = await request.json();
@@ -52,15 +57,21 @@ Deno.serve(async (request: Request) => {
   }
 
   const messages: ChatMessage[] = [];
-  for (const item of payload.messages) {
+  let totalCharacters = 0;
+  for (const [index, item] of payload.messages.entries()) {
+    const expectedRole = index % 2 === 0 ? "user" : "assistant";
     if (
       !item ||
-      (item.role !== "user" && item.role !== "assistant") ||
+      item.role !== expectedRole ||
       typeof item.content !== "string" ||
       item.content.trim().length === 0 ||
       item.content.length > 1500
     ) {
-      return json({ error: "Each message must have a valid role and contain 1–1500 characters." }, 400);
+      return json({ error: "Messages must alternate between user and assistant and contain 1–1500 characters each." }, 400);
+    }
+    totalCharacters += item.content.length;
+    if (totalCharacters > 6000) {
+      return json({ error: "The conversation context is too large. Start a new chat." }, 413);
     }
     messages.push({ role: item.role, content: item.content.trim() });
   }
