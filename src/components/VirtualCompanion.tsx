@@ -18,7 +18,7 @@ function companionMessage(pathname: string) {
     return "I'm your in-platform companion. The separate AI Coach is available in its own section.";
   if (pathname.startsWith("/settings"))
     return "You can review your profile and training preferences here.";
-  return "Welcome back. I'm here to help you navigate your human-performance journey.";
+  return "Hey! I’m NOVA. We can talk about your goals, ideas, daily life, or anything you’re curious about. I’m here to help.";
 }
 
 /**
@@ -61,7 +61,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
               </span>
               <div>
                 <p className="text-xs font-semibold">NOVA</p>
-                <p className="text-[10px] text-muted-foreground">Your virtual companion</p>
+                <p className="text-[10px] text-muted-foreground">Your friendly AI companion</p>
               </div>
               <span className="ml-1 size-2 rounded-full bg-emerald-400" aria-label="Available" />
             </div>
@@ -90,7 +90,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
             </div>
             <div className="min-w-0">
               <p className="text-sm leading-relaxed text-foreground">{message}</p>
-              <p className="mt-2 text-[10px] text-muted-foreground">Context-aware companion · Voice features planned</p>
+              <p className="mt-2 text-[10px] text-muted-foreground">Friendly conversations · Voice integration pending</p>
             </div>
           </div>
         </section>
@@ -126,17 +126,20 @@ function CompanionAvatar({ compact = false }: { compact?: boolean }) {
           <stop offset="0.55" stopColor="#76d9ee" />
           <stop offset="1" stopColor="#6677cf" />
         </linearGradient>
-        <linearGradient id="nova-suit" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#263c61" />
-          <stop offset="1" stopColor="#101a32" />
+        <linearGradient id="nova-sari" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f6a6c8" />
+          <stop offset="0.55" stopColor="#bd4f88" />
+          <stop offset="1" stopColor="#702b65" />
         </linearGradient>
       </defs>
       <ellipse cx="60" cy="142" rx="34" ry="5" fill="#50d9ec" opacity=".18" />
-      <path d="M29 145 Q31 111 43 103 L77 103 Q91 113 93 145Z" fill="url(#nova-suit)" stroke="#70dced" strokeWidth="1.5" />
-      <path d="M45 104 L60 119 L75 104 L81 145 L39 145Z" fill="#1c2e4e" />
-      <path d="M51 104 L60 120 L69 104" fill="none" stroke="#8df0f5" strokeWidth="2" />
-      <path d="M44 105 L35 116 L43 133 L52 119" fill="#314c76" stroke="#6ed8ec" strokeWidth="1" />
-      <path d="M76 105 L85 116 L77 133 L68 119" fill="#314c76" stroke="#6ed8ec" strokeWidth="1" />
+      <path d="M29 145 Q31 111 43 103 L77 103 Q91 113 93 145Z" fill="url(#nova-sari)" stroke="#f8c5dd" strokeWidth="1.5" />
+      <path d="M43 104 L60 119 L77 104 L88 145 L33 145Z" fill="#8e356f" />
+      <path d="M43 105 Q57 112 60 127 Q70 114 79 105 L91 145 L30 145Z" fill="url(#nova-sari)" stroke="#f6c2d9" strokeWidth="1" />
+      <path d="M42 104 Q53 111 60 126 Q67 113 79 104" fill="none" stroke="#ffe0ed" strokeWidth="2" />
+      <path d="M43 109 Q28 119 36 139 L48 145 L55 130Z" fill="#d66b9f" stroke="#f8c5dd" strokeWidth="1" />
+      <path d="M76 105 Q86 111 91 126 L84 145 L68 130Z" fill="#a9417b" stroke="#f8c5dd" strokeWidth="1" />
+      <path d="M34 139 Q59 132 88 139" fill="none" stroke="#f9d7e7" strokeWidth="1.4" />
       <path d="M42 44 Q39 14 64 12 Q91 14 86 54 L82 88 Q77 105 60 106 Q42 102 37 82Z" fill="url(#nova-hair)" />
       <path d="M39 55 Q29 27 48 17 Q64 2 82 18 Q99 31 85 62 Q81 42 68 34 Q59 49 42 54Z" fill="#a6eff8" stroke="#d9fbff" strokeWidth="1" />
       <path d="M41 48 Q29 55 35 82 Q39 96 48 100 L46 71Z" fill="#78d8ed" />
@@ -154,8 +157,8 @@ function CompanionAvatar({ compact = false }: { compact?: boolean }) {
       <path d="M36 55 Q27 36 40 19 Q50 3 68 9 Q89 11 93 34 Q83 25 78 23 Q69 39 51 42 Q43 47 36 55Z" fill="url(#nova-hair)" stroke="#d8faff" strokeWidth="1" />
       <path d="M39 25 Q28 42 34 66" fill="none" stroke="#f2ffff" strokeWidth="2" opacity=".8" />
       <path d="M82 28 Q91 43 84 60" fill="none" stroke="#b8f6ff" strokeWidth="2" opacity=".8" />
-      <path d="M54 120 L60 127 L66 120" fill="none" stroke="#8df0f5" strokeWidth="2" />
-      <circle cx="60" cy="133" r="3" fill="#9af4f7" />
+      <path d="M54 120 L60 127 L66 120" fill="none" stroke="#ffe0ed" strokeWidth="2" />
+      <circle cx="60" cy="133" r="3" fill="#ffe0ed" />
     </svg>
   );
 }
