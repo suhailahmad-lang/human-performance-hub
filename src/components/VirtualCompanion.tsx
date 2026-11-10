@@ -365,6 +365,10 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
 }
 
 function CompanionAvatar({ compact = false, speaking = false }: { compact?: boolean; speaking?: boolean }) {
+  const avatarId = useId().replace(/:/g, "");
+  const hairGradientId = `nova-hair-${avatarId}`;
+  const sariGradientId = `nova-sari-${avatarId}`;
+
   return (
     <svg
       viewBox="0 0 120 150"
@@ -387,32 +391,32 @@ function CompanionAvatar({ compact = false, speaking = false }: { compact?: bool
         }
       `}</style>
       <defs>
-        <linearGradient id="nova-hair" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={hairGradientId} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#d8f7ff" />
           <stop offset="0.55" stopColor="#76d9ee" />
           <stop offset="1" stopColor="#6677cf" />
         </linearGradient>
-        <linearGradient id="nova-sari" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={sariGradientId} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#f6a6c8" />
           <stop offset="0.55" stopColor="#bd4f88" />
           <stop offset="1" stopColor="#702b65" />
         </linearGradient>
       </defs>
       <ellipse cx="60" cy="142" rx="34" ry="5" fill="#50d9ec" opacity=".18" />
-      <path d="M29 145 Q31 111 43 103 L77 103 Q91 113 93 145Z" fill="url(#nova-sari)" stroke="#f8c5dd" strokeWidth="1.5" />
+      <path d="M29 145 Q31 111 43 103 L77 103 Q91 113 93 145Z" fill={`url(#${sariGradientId})`} stroke="#f8c5dd" strokeWidth="1.5" />
       <path d="M43 104 Q60 98 77 104 L83 119 Q60 128 37 119Z" fill="#702b65" stroke="#f8c5dd" strokeWidth="1.2" />
-      <path d="M34 145 L42 111 Q53 116 60 130 Q69 116 81 111 L91 145Z" fill="url(#nova-sari)" stroke="#f6c2d9" strokeWidth="1" />
+      <path d="M34 145 L42 111 Q53 116 60 130 Q69 116 81 111 L91 145Z" fill={`url(#${sariGradientId})`} stroke="#f6c2d9" strokeWidth="1" />
       <path d="M39 108 Q53 113 60 130 Q69 114 84 108 L91 145 L30 145Z" fill="none" stroke="#ffe0ed" strokeWidth="2" />
       <path d="M78 105 Q91 109 103 127 L94 145 L72 133 Q83 120 78 105Z" fill="#c65391" stroke="#ffe0ed" strokeWidth="1.4" />
       <path d="M80 108 Q93 119 98 136" fill="none" stroke="#ffe7f2" strokeWidth="1.5" />
       <path d="M35 139 Q59 132 89 139" fill="none" stroke="#f9d7e7" strokeWidth="1.4" />
       <path d="M44 105 L38 119 M49 108 L44 124 M74 108 L80 123" stroke="#f7c5dc" strokeWidth="1" />
-      <path d="M42 44 Q39 14 64 12 Q91 14 86 54 L82 88 Q77 105 60 106 Q42 102 37 82Z" fill="url(#nova-hair)" />
+      <path d="M42 44 Q39 14 64 12 Q91 14 86 54 L82 88 Q77 105 60 106 Q42 102 37 82Z" fill={`url(#${hairGradientId})`} />
       <path d="M39 55 Q29 27 48 17 Q64 2 82 18 Q99 31 85 62 Q81 42 68 34 Q59 49 42 54Z" fill="#a6eff8" stroke="#d9fbff" strokeWidth="1" />
       <path d="M41 48 Q29 55 35 82 Q39 96 48 100 L46 71Z" fill="#78d8ed" />
       <path d="M82 45 Q96 55 87 88 Q83 98 75 102 L77 68Z" fill="#617bd1" />
       <ellipse cx="60" cy="62" rx="23" ry="29" fill="#f5d9d3" />
-      <path d="M38 54 Q42 34 59 34 Q77 35 83 53 Q72 45 65 45 Q53 53 38 54Z" fill="url(#nova-hair)" />
+      <path d="M38 54 Q42 34 59 34 Q77 35 83 53 Q72 45 65 45 Q53 53 38 54Z" fill={`url(#${hairGradientId})`} />
       <path d="M42 61 Q49 56 55 62" fill="none" stroke="#34476d" strokeWidth="2.2" strokeLinecap="round" />
       <path d="M66 62 Q73 56 79 61" fill="none" stroke="#34476d" strokeWidth="2.2" strokeLinecap="round" />
       <ellipse cx="50" cy="67" rx="3.4" ry="5" fill="#4aaecb" />
@@ -427,7 +431,7 @@ function CompanionAvatar({ compact = false, speaking = false }: { compact?: bool
       ) : (
         <path d="M51 86 Q60 91 69 86" fill="none" stroke="#c77d89" strokeWidth="1.7" strokeLinecap="round" />
       )}
-      <path d="M36 55 Q27 36 40 19 Q50 3 68 9 Q89 11 93 34 Q83 25 78 23 Q69 39 51 42 Q43 47 36 55Z" fill="url(#nova-hair)" stroke="#d8faff" strokeWidth="1" />
+      <path d="M36 55 Q27 36 40 19 Q50 3 68 9 Q89 11 93 34 Q83 25 78 23 Q69 39 51 42 Q43 47 36 55Z" fill={`url(#${hairGradientId})`} stroke="#d8faff" strokeWidth="1" />
       <path d="M39 25 Q28 42 34 66" fill="none" stroke="#f2ffff" strokeWidth="2" opacity=".8" />
       <path d="M82 28 Q91 43 84 60" fill="none" stroke="#b8f6ff" strokeWidth="2" opacity=".8" />
       <path d="M54 120 L60 127 L66 120" fill="none" stroke="#ffe0ed" strokeWidth="2" />
