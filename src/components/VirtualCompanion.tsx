@@ -372,6 +372,20 @@ function CompanionAvatar({ compact = false, speaking = false }: { compact?: bool
       aria-label="NOVA, original anime-inspired virtual companion"
       className={compact ? "size-7" : "h-auto w-full drop-shadow-[0_8px_18px_rgba(34,211,238,0.16)]"}
     >
+      <style>{`
+        @keyframes nova-blink {
+          0%, 92%, 96%, 100% { transform: scaleY(0); }
+          94% { transform: scaleY(1); }
+        }
+        .nova-eyelid {
+          transform-box: fill-box;
+          transform-origin: center;
+          animation: nova-blink 5.2s infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .nova-eyelid { animation: none; }
+        }
+      `}</style>
       <defs>
         <linearGradient id="nova-hair" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#d8f7ff" />
@@ -405,6 +419,8 @@ function CompanionAvatar({ compact = false, speaking = false }: { compact?: bool
       <ellipse cx="71" cy="67" rx="3.4" ry="5" fill="#4aaecb" />
       <circle cx="51" cy="65" r="1.2" fill="white" />
       <circle cx="72" cy="65" r="1.2" fill="white" />
+      <ellipse className="nova-eyelid" cx="50" cy="67" rx="4.3" ry="6.2" fill="#f5d9d3" />
+      <ellipse className="nova-eyelid" cx="71" cy="67" rx="4.3" ry="6.2" fill="#f5d9d3" />
       <path d="M58 76 Q61 79 64 76" fill="none" stroke="#bd7b83" strokeWidth="1.5" strokeLinecap="round" />
       {speaking ? (
         <ellipse cx="60" cy="87" rx="4.2" ry="5.2" fill="#9d536d" stroke="#c77d89" strokeWidth="1.2" />
