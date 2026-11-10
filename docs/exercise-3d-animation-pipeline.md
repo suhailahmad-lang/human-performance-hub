@@ -52,3 +52,18 @@ The next character milestone is a proper humanoid armature with named joints, we
 ## Asset delivery boundary
 
 The 3D Jutsu export endpoint currently supplies a short-lived signed download URL. The app must use a durable storage URL; the expiring URL must never be added to `EXERCISE_3D_ASSETS`. No exercise GLB is registered in the app until the durable upload and viewer playback are both verified.
+
+## Armature-rigged air-squat prototype — 10 Nov 2026
+
+- 3D Jutsu project revision: 2
+- Rig object: `RIG_HUMANOID`
+- Deforming mesh: `HERO_RIGGED_BODY` (2,886 vertices)
+- Skeleton: 14 deform bones and 5 non-deforming controls
+- Skin: 14 vertex groups and one Armature modifier with preserve-volume enabled
+- Leg control: two IK constraints with foot targets and knee poles
+- Animation action: `RIG_HUMANOIDAction`, frames 1–49 at 24 fps
+- Sampled frames 1, 25 and 49 confirm the keyed root/spine values and fixed foot-control target coordinates
+
+The rig structure and animation data were verified numerically in Blender 5.2. The three rendered review frames were generated, but the signed preview images could not be retrieved for visual inspection in this session. Therefore silhouette, joint deformation, knee path, floor contact and loop appearance are **not visually approved**. Do not register this GLB as a production exercise asset until those checks pass and a durable storage URL is available.
+
+The original independently animated source parts remain hidden as a reference; the joined weighted mesh and armature are the new rigged prototype.
