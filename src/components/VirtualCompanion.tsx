@@ -64,6 +64,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
   const [listening, setListening] = useState(false);
   const [voiceLanguage, setVoiceLanguage] = useState<"hi-IN" | "en-IN">("hi-IN");
   const [autoSpeak, setAutoSpeak] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("Voice input is available in supported browsers.");
   const [chatMessages, setChatMessages] = useState<CompanionChatMessage[]>([]);
   const [sending, setSending] = useState(false);
@@ -160,11 +161,29 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
     const detectedLanguage = /[\u0900-\u097F]/.test(spokenText) ? "hi-IN" : voiceLanguage;
     const utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = detectedLanguage;
+    utterance.onstart = () => {
+      setSpeaking(true);
+      setVoiceStatus("NOVA is speaking.");
+    };
+    utterance.onend = () => {
+      setSpeaking(false);
+      setVoiceStatus("Voice playback finished.");
+    };
+    utterance.onerror = () => {
+      setSpeaking(false);
+      setVoiceStatus("Browser voice playback could not finish.");
+    };
     const availableVoices = window.speechSynthesis.getVoices();
     utterance.voice = availableVoices.find((voice) => voice.lang.toLowerCase().startsWith(detectedLanguage.toLowerCase())) ?? null;
     utterance.rate = 0.96;
     window.speechSynthesis.speak(utterance);
-    setVoiceStatus("Playing the selected language's available browser voice. Dedicated NOVA voice is still pending.");
+    setVoiceStatus("Starting the selected language's available browser voice. Dedicated NOVA voice is still pending.");
+  }
+
+  function stopSpeaking() {
+    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    setSpeaking(false);
+    setVoiceStatus("Voice playback stopped.");
   }
 
   function speakGreeting() {
@@ -183,7 +202,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
         aria-label="Show virtual companion"
         className="fixed bottom-24 right-4 z-40 grid size-14 place-items-center rounded-full border border-primary/50 bg-card shadow-xl shadow-primary/10 transition hover:scale-105 lg:bottom-5 lg:right-5"
       >
-        <CompanionAvatar compact />
+        <CompanionAvatar compact speaking={speaking} />
       </button>
     );
   }
@@ -227,7 +246,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
           </header>
           <div className="flex items-center gap-3 p-3">
             <div className="w-[5.5rem] shrink-0">
-              <CompanionAvatar />
+              <CompanionAvatar speaking={speaking} />
             </div>
             <div className="min-w-0">
               <p className="text-sm leading-relaxed text-foreground">{message}</p>
@@ -239,6 +258,15 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
                 >
                   <Volume2 className="size-3" /> Hear NOVA
                 </button>
+                {speaking && (
+                  <button
+                    type="button"
+                    onClick={stopSpeaking}
+                    className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-secondary"
+                  >
+                    <Volume2 className="size-3" /> Stop voice
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={toggleListening}
@@ -336,7 +364,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
   );
 }
 
-function CompanionAvatar({ compact = false }: { compact?: boolean }) {
+function CompanionAvatar({ compact = false, speaking = false }: { compact?: boolean; speaking?: boolean }) {
   return (
     <svg
       viewBox="0 0 120 150"
@@ -378,7 +406,11 @@ function CompanionAvatar({ compact = false }: { compact?: boolean }) {
       <circle cx="51" cy="65" r="1.2" fill="white" />
       <circle cx="72" cy="65" r="1.2" fill="white" />
       <path d="M58 76 Q61 79 64 76" fill="none" stroke="#bd7b83" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M51 86 Q60 91 69 86" fill="none" stroke="#c77d89" strokeWidth="1.7" strokeLinecap="round" />
+      {speaking ? (
+        <ellipse cx="60" cy="87" rx="4.2" ry="5.2" fill="#9d536d" stroke="#c77d89" strokeWidth="1.2" />
+      ) : (
+        <path d="M51 86 Q60 91 69 86" fill="none" stroke="#c77d89" strokeWidth="1.7" strokeLinecap="round" />
+      )}
       <path d="M36 55 Q27 36 40 19 Q50 3 68 9 Q89 11 93 34 Q83 25 78 23 Q69 39 51 42 Q43 47 36 55Z" fill="url(#nova-hair)" stroke="#d8faff" strokeWidth="1" />
       <path d="M39 25 Q28 42 34 66" fill="none" stroke="#f2ffff" strokeWidth="2" opacity=".8" />
       <path d="M82 28 Q91 43 84 60" fill="none" stroke="#b8f6ff" strokeWidth="2" opacity=".8" />
