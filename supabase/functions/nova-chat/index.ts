@@ -47,7 +47,27 @@ Deno.serve(async (request: Request) => {
 
   let payload: { messages?: unknown };
   try {
-    payload = await request.json();
+    const reader = request.body?.getReader();
+    if (!reader) return json({ error: "The request body is missing." }, 400);
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > 20_000) {
+        await reader.cancel();
+        return json({ error: "The chat request is too large." }, 413);
+      }
+      chunks.push(value);
+    }
+    const bodyBytes = new Uint8Array(totalBytes);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bodyBytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    payload = JSON.parse(new TextDecoder().decode(bodyBytes));
   } catch {
     return json({ error: "Send a valid JSON request." }, 400);
   }
