@@ -13,14 +13,14 @@ This function searches the public wger exercise information API and returns upst
 Authenticated POST request:
 
 ```json
-{ "query": "push up" }
+{ "query": "push up", "page": 1 }
 ```
 
-The query must contain 2–100 characters. The function currently reads the first 100 upstream exercise-info records, then filters those records by translated name, description, muscle, equipment, and category. It returns up to 20 matches. It does not claim to search the entire upstream catalogue yet.
+`page` is optional and defaults to 1; accepted values are integers from 1 to 50. Each page reads 100 upstream exercise-info records using the upstream offset, then filters that page by translated name, description, muscle, equipment, and category. It returns up to 20 matches per page and indicates whether the upstream API has another page. The library detail UI can request subsequent pages. Search is therefore paginated, but capped at 5,000 upstream records per query; it does not claim to cover records beyond that cap.
 
 ## Media and attribution
 
-Media URLs and per-asset licence/author metadata are passed through from wger; the client must display the source and applicable licence/author information with each asset. Do not copy media into the platform or remove attribution without checking the individual asset's reuse terms.
+Media URLs and per-asset licence/author metadata are passed through from wger; the exercise detail UI displays available images, demo links, source links, and licence/author information. Do not copy media into the platform or remove attribution without checking the individual asset's reuse terms.
 
 The upstream API provides the expanded exercise information representation with related images and videos. See https://wger.readthedocs.io/en/latest/api/api.html
 
