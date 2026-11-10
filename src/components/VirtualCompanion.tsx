@@ -7,7 +7,7 @@ interface VirtualCompanionProps {
 
 function companionMessage(pathname: string) {
   if (pathname.startsWith("/workout/") || pathname === "/today")
-    return "Ready when you are. I can guide your session and help you keep track of each exercise.";
+    return "I can help you stay focused on your session. Ask me about an exercise or your training plan.";
   if (pathname.startsWith("/library"))
     return "Explore an exercise and open its guide to learn the movement safely.";
   if (pathname.startsWith("/progress"))
@@ -18,7 +18,7 @@ function companionMessage(pathname: string) {
     return "I'm your in-platform companion. The separate AI Coach is available in its own section.";
   if (pathname.startsWith("/settings"))
     return "You can review your profile and training preferences here.";
-  return "Hey! I’m NOVA. We can talk about your goals, ideas, daily life, or anything you’re curious about. I’m here to help.";
+  return "Hey, I’m NOVA! We can chat about your ideas, interests, everyday questions, or your performance goals. What’s on your mind?";
 }
 
 /**
@@ -61,9 +61,9 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
               </span>
               <div>
                 <p className="text-xs font-semibold">NOVA</p>
-                <p className="text-[10px] text-muted-foreground">Your friendly AI companion</p>
+                <p className="text-[10px] text-muted-foreground">NOVA · AI companion</p>
               </div>
-              <span className="ml-1 size-2 rounded-full bg-emerald-400" aria-label="Available" />
+              <span className="ml-1 rounded-full bg-secondary px-2 py-0.5 text-[9px] text-muted-foreground">Preview</span>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -90,7 +90,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
             </div>
             <div className="min-w-0">
               <p className="text-sm leading-relaxed text-foreground">{message}</p>
-              <p className="mt-2 text-[10px] text-muted-foreground">Friendly conversations · Voice integration pending</p>
+              <p className="mt-2 text-[10px] text-muted-foreground">Smart, friendly conversations · Voice coming next</p>
             </div>
           </div>
         </section>
@@ -134,12 +134,13 @@ function CompanionAvatar({ compact = false }: { compact?: boolean }) {
       </defs>
       <ellipse cx="60" cy="142" rx="34" ry="5" fill="#50d9ec" opacity=".18" />
       <path d="M29 145 Q31 111 43 103 L77 103 Q91 113 93 145Z" fill="url(#nova-sari)" stroke="#f8c5dd" strokeWidth="1.5" />
-      <path d="M43 104 L60 119 L77 104 L88 145 L33 145Z" fill="#8e356f" />
-      <path d="M43 105 Q57 112 60 127 Q70 114 79 105 L91 145 L30 145Z" fill="url(#nova-sari)" stroke="#f6c2d9" strokeWidth="1" />
-      <path d="M42 104 Q53 111 60 126 Q67 113 79 104" fill="none" stroke="#ffe0ed" strokeWidth="2" />
-      <path d="M43 109 Q28 119 36 139 L48 145 L55 130Z" fill="#d66b9f" stroke="#f8c5dd" strokeWidth="1" />
-      <path d="M76 105 Q86 111 91 126 L84 145 L68 130Z" fill="#a9417b" stroke="#f8c5dd" strokeWidth="1" />
-      <path d="M34 139 Q59 132 88 139" fill="none" stroke="#f9d7e7" strokeWidth="1.4" />
+      <path d="M43 104 Q60 98 77 104 L83 119 Q60 128 37 119Z" fill="#702b65" stroke="#f8c5dd" strokeWidth="1.2" />
+      <path d="M34 145 L42 111 Q53 116 60 130 Q69 116 81 111 L91 145Z" fill="url(#nova-sari)" stroke="#f6c2d9" strokeWidth="1" />
+      <path d="M39 108 Q53 113 60 130 Q69 114 84 108 L91 145 L30 145Z" fill="none" stroke="#ffe0ed" strokeWidth="2" />
+      <path d="M78 105 Q91 109 103 127 L94 145 L72 133 Q83 120 78 105Z" fill="#c65391" stroke="#ffe0ed" strokeWidth="1.4" />
+      <path d="M80 108 Q93 119 98 136" fill="none" stroke="#ffe7f2" strokeWidth="1.5" />
+      <path d="M35 139 Q59 132 89 139" fill="none" stroke="#f9d7e7" strokeWidth="1.4" />
+      <path d="M44 105 L38 119 M49 108 L44 124 M74 108 L80 123" stroke="#f7c5dc" strokeWidth="1" />
       <path d="M42 44 Q39 14 64 12 Q91 14 86 54 L82 88 Q77 105 60 106 Q42 102 37 82Z" fill="url(#nova-hair)" />
       <path d="M39 55 Q29 27 48 17 Q64 2 82 18 Q99 31 85 62 Q81 42 68 34 Q59 49 42 54Z" fill="#a6eff8" stroke="#d9fbff" strokeWidth="1" />
       <path d="M41 48 Q29 55 35 82 Q39 96 48 100 L46 71Z" fill="#78d8ed" />
