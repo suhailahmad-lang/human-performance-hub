@@ -14,23 +14,35 @@ export function LiveExerciseMediaPanel({ exerciseName }: LiveExerciseMediaPanelP
   const [attribution, setAttribution] = useState("");
   const [query, setQuery] = useState(exerciseName);
   const [searched, setSearched] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function search() {
+  async function loadPage(nextPage: number, append: boolean) {
     setLoading(true);
     setError("");
     setSearched(true);
+    if (!append) setItems([]);
     try {
-      const response = await searchLiveExerciseMedia(query);
-      setItems(response.results);
+      const response = await searchLiveExerciseMedia(query, nextPage);
+      setItems((current) => {
+        if (!append) return response.results;
+        const existing = new Set(current.map((item) => item.providerExerciseId));
+        return [...current, ...response.results.filter((item) => !existing.has(item.providerExerciseId))];
+      });
       setAttribution(response.attribution);
+      setPage(response.page);
+      setHasMore(response.hasMoreUpstreamResults);
     } catch (cause) {
-      setItems([]);
       setError(cause instanceof Error ? cause.message : "Live media search failed.");
     } finally {
       setLoading(false);
     }
+  }
+
+  function search() {
+    void loadPage(1, false);
   }
 
   return (
@@ -172,6 +184,18 @@ export function LiveExerciseMediaPanel({ exerciseName }: LiveExerciseMediaPanelP
               );
             })}
           </div>
+          {hasMore && (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => void loadPage(page + 1, true)}
+                className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50"
+              >
+                {loading ? "Loading…" : "Load more catalogue results"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </section>
