@@ -30,17 +30,21 @@ interface ExerciseMediaResponse {
   attribution: string;
   providerDocumentation: string;
   results: LiveExerciseMediaResult[];
+  page: number;
   hasMoreUpstreamResults: boolean;
 }
 
-export async function searchLiveExerciseMedia(query: string): Promise<ExerciseMediaResponse> {
+export async function searchLiveExerciseMedia(query: string, page = 1): Promise<ExerciseMediaResponse> {
   const normalizedQuery = query.trim();
   if (normalizedQuery.length < 2 || normalizedQuery.length > 100) {
     throw new Error("Enter an exercise search between 2 and 100 characters.");
   }
+  if (!Number.isInteger(page) || page < 1 || page > 50) {
+    throw new Error("Exercise catalogue page must be between 1 and 50.");
+  }
 
   const { data, error } = await supabase.functions.invoke<ExerciseMediaResponse>("exercise-media", {
-    body: { query: normalizedQuery },
+    body: { query: normalizedQuery, page },
   });
 
   if (error) throw new Error(error.message || "Live exercise catalogue search failed.");
