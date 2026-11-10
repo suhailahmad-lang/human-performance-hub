@@ -33,11 +33,11 @@ function Onboarding() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <Logo />
-      <p className="eyebrow mt-10">Step 1 of 1 · Assessment</p>
-      <h1 className="mt-2 text-4xl font-bold">Let's measure your starting point</h1>
+      <p className="eyebrow mt-10">YOUR PERFORMANCE PROFILE</p>
+      <h1 className="mt-2 text-4xl font-bold">Build your performance profile</h1>
       <p className="mt-2 text-muted-foreground">
-        About 3 minutes. Your answers build a baseline and a personalised weekly plan. Optional
-        fields are clearly marked.
+        A guided assessment that turns your goals, experience and available time into a plan
+        built around your real routine. You can leave optional measurements blank.
       </p>
       <div className="mt-8">
         {isLoading ? (
@@ -47,6 +47,7 @@ function Onboarding() {
         ) : (
           <ProfileForm
             initial={profile}
+            wizard
             submitLabel="Build my plan"
             onSubmit={async (v) => {
               const { data, error } = await supabase

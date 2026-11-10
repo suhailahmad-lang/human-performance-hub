@@ -102,6 +102,7 @@ export function AppShell() {
         </div>
       </main>
 
+
       <nav
         aria-label="Main mobile"
         className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-border bg-sidebar/95 backdrop-blur lg:hidden"

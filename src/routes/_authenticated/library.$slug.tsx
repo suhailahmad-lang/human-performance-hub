@@ -3,6 +3,7 @@ import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { PageHeader, Panel, DomainBadge, Loading, ErrorState, Empty } from "@/components/ui-kit";
 import { useExercises } from "@/lib/data";
 import { ALTERNATIVE_EQUIPMENT_SLUGS, EQUIPMENT } from "@/lib/domains";
+import { Exercise3DAnimation } from "@/components/Exercise3DAnimation";
 
 export const Route = createFileRoute("/_authenticated/library/$slug")({
   head: () => ({
@@ -43,6 +44,9 @@ function Detail() {
         description={e.description}
         action={<DomainBadge domain={e.domain} />}
       />
+      <div className="mb-4">
+        <Exercise3DAnimation exerciseSlug={e.slug} exerciseName={e.name} />
+      </div>
       <div className="grid gap-4 md:grid-cols-3">
         <Panel title="Coaching cues" className="md:col-span-2">
           <ol className="space-y-3">
