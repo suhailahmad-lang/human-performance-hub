@@ -44,20 +44,37 @@ export function Exercise3DAnimation({
       return;
     }
 
+    let cancelled = false;
+    const markReady = async () => {
+      await customElements.whenDefined("model-viewer");
+      if (!cancelled) setViewerReady(true);
+    };
+
     const existing = document.querySelector<HTMLScriptElement>(
       'script[data-exercise-model-viewer="true"]',
     );
     if (existing) {
-      existing.addEventListener("load", () => setViewerReady(true), { once: true });
-      return;
+      if (customElements.get("model-viewer")) {
+        void markReady();
+      } else {
+        existing.addEventListener("load", () => void markReady(), { once: true });
+        existing.addEventListener("error", () => {
+          if (!cancelled) setViewerReady(false);
+        }, { once: true });
+      }
+      return () => { cancelled = true; };
     }
 
     const script = document.createElement("script");
     script.type = "module";
     script.src = MODEL_VIEWER_SCRIPT;
     script.dataset.exerciseModelViewer = "true";
-    script.onload = () => setViewerReady(true);
+    script.onload = () => void markReady();
+    script.onerror = () => {
+      if (!cancelled) setViewerReady(false);
+    };
     document.head.appendChild(script);
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -194,6 +211,5 @@ function ReactModelViewer({
       background: "transparent",
       opacity: ready ? 1 : 0,
     },
-    onLoad: () => viewerRef.current?.play?.(),
   });
 }
