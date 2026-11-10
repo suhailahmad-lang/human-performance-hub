@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { LoaderCircle, MessageCircle, Mic, MicOff, Minus, Send, Sparkles, Volume2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
