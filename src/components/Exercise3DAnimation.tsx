@@ -34,48 +34,65 @@ export function Exercise3DAnimation({
 }: Exercise3DAnimationProps) {
   const viewerRef = useRef<ModelViewerElement | null>(null);
   const [viewerReady, setViewerReady] = useState(false);
+  const [viewerError, setViewerError] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const asset = EXERCISE_3D_ASSETS[exerciseSlug];
 
   useEffect(() => {
-    if (customElements.get("model-viewer")) {
-      setViewerReady(true);
-      return;
-    }
+    // Do not download the viewer runtime on exercise pages that have no
+    // verified, durable GLB asset registered yet.
+    if (!asset) return;
 
     let cancelled = false;
-    const markReady = async () => {
-      await customElements.whenDefined("model-viewer");
-      if (!cancelled) setViewerReady(true);
-    };
-
+    let timeoutId: number | undefined;
     const existing = document.querySelector<HTMLScriptElement>(
       'script[data-exercise-model-viewer="true"]',
     );
-    if (existing) {
-      if (customElements.get("model-viewer")) {
-        void markReady();
-      } else {
-        existing.addEventListener("load", () => void markReady(), { once: true });
-        existing.addEventListener("error", () => {
-          if (!cancelled) setViewerReady(false);
-        }, { once: true });
-      }
-      return () => { cancelled = true; };
+
+    const markReady = () => {
+      if (cancelled) return;
+      setViewerReady(true);
+      setViewerError(false);
+    };
+    const markFailed = () => {
+      if (cancelled) return;
+      setViewerReady(false);
+      setViewerError(true);
+    };
+    const onScriptLoad = () => {
+      void customElements.whenDefined("model-viewer").then(markReady);
+    };
+
+    setViewerReady(false);
+    setViewerError(false);
+    timeoutId = window.setTimeout(markFailed, 15_000);
+
+    if (customElements.get("model-viewer")) {
+      markReady();
+    } else if (existing) {
+      existing.addEventListener("load", onScriptLoad);
+      existing.addEventListener("error", markFailed);
+      // Also handles a shared script whose load event fired before this
+      // component mounted.
+      void customElements.whenDefined("model-viewer").then(markReady);
+    } else {
+      const script = document.createElement("script");
+      script.type = "module";
+      script.src = MODEL_VIEWER_SCRIPT;
+      script.dataset.exerciseModelViewer = "true";
+      script.addEventListener("load", onScriptLoad, { once: true });
+      script.addEventListener("error", markFailed, { once: true });
+      document.head.appendChild(script);
     }
 
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = MODEL_VIEWER_SCRIPT;
-    script.dataset.exerciseModelViewer = "true";
-    script.onload = () => void markReady();
-    script.onerror = () => {
-      if (!cancelled) setViewerReady(false);
+    return () => {
+      cancelled = true;
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      existing?.removeEventListener("load", onScriptLoad);
+      existing?.removeEventListener("error", markFailed);
     };
-    document.head.appendChild(script);
-    return () => { cancelled = true; };
-  }, []);
+  }, [asset?.src]);
 
   useEffect(() => {
     setPlaying(false);
@@ -121,7 +138,7 @@ export function Exercise3DAnimation({
           </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-3 py-1 text-xs text-primary">
-          <Cuboid className="size-3.5" /> 3D GLB
+          <Cuboid className="size-3.5" /> {asset ? "3D GLB" : "3D asset pending"}
         </span>
       </div>
 
@@ -135,8 +152,10 @@ export function Exercise3DAnimation({
               ready: viewerReady,
             })}
             {!viewerReady && (
-              <div className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">
-                Loading 3D viewer…
+              <div className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-muted-foreground">
+                {viewerError
+                  ? "The 3D viewer could not be loaded. Check your connection and try again later."
+                  : "Loading 3D viewer…"}
               </div>
             )}
           </div>
