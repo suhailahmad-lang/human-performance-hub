@@ -63,6 +63,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
   const [voiceLanguage, setVoiceLanguage] = useState<"hi-IN" | "en-IN">("hi-IN");
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("Voice input is available in supported browsers.");
   const [chatMessages, setChatMessages] = useState<CompanionChatMessage[]>([]);
   const [sending, setSending] = useState(false);
@@ -136,6 +137,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
         ...current,
         { role: "assistant", content: data.reply },
       ].slice(-12));
+      if (autoSpeak) speakText(data.reply);
     } catch (error) {
       console.error("NOVA chat failed:", error);
       setChatError(
@@ -149,22 +151,25 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
     }
   }
 
-  function speakGreeting() {
+  function speakText(spokenText: string) {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       setVoiceStatus("Speech playback is not supported in this browser.");
       return;
     }
     window.speechSynthesis.cancel();
-    const latestReply = [...chatMessages].reverse().find((item) => item.role === "assistant")?.content;
-    const spokenText = latestReply ?? message;
-    const utterance = new SpeechSynthesisUtterance(spokenText);
     const detectedLanguage = /[\u0900-\u097F]/.test(spokenText) ? "hi-IN" : voiceLanguage;
+    const utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = detectedLanguage;
     const availableVoices = window.speechSynthesis.getVoices();
     utterance.voice = availableVoices.find((voice) => voice.lang.toLowerCase().startsWith(detectedLanguage.toLowerCase())) ?? null;
     utterance.rate = 0.96;
     window.speechSynthesis.speak(utterance);
-    setVoiceStatus("Playing the browser's available voice. A dedicated NOVA voice is still being integrated.");
+    setVoiceStatus("Playing the selected language's available browser voice. Dedicated NOVA voice is still pending.");
+  }
+
+  function speakGreeting() {
+    const latestReply = [...chatMessages].reverse().find((item) => item.role === "assistant")?.content;
+    speakText(latestReply ?? message);
   }
 
   if (dismissed) {
@@ -256,6 +261,15 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
                   </select>
                 </label>
               </div>
+              <label className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={autoSpeak}
+                  onChange={(event) => setAutoSpeak(event.target.checked)}
+                  className="accent-primary"
+                />
+                Automatically speak NOVA replies
+              </label>
             </div>
           </div>
           <div className="border-t border-border px-3 py-2">
