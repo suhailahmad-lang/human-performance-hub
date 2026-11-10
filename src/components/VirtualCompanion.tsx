@@ -62,6 +62,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
   const [dismissed, setDismissed] = useState(false);
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
+  const [voiceLanguage, setVoiceLanguage] = useState<"hi-IN" | "en-IN">("hi-IN");
   const [voiceStatus, setVoiceStatus] = useState("Voice input is available in supported browsers.");
   const [chatMessages, setChatMessages] = useState<CompanionChatMessage[]>([]);
   const [sending, setSending] = useState(false);
@@ -89,7 +90,7 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
       return;
     }
 
-    recognition.lang = "en-IN";
+    recognition.lang = voiceLanguage;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognition.onresult = (event) => {
@@ -155,8 +156,12 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
     }
     window.speechSynthesis.cancel();
     const latestReply = [...chatMessages].reverse().find((item) => item.role === "assistant")?.content;
-    const utterance = new SpeechSynthesisUtterance(latestReply ?? message);
-    utterance.lang = "en-IN";
+    const spokenText = latestReply ?? message;
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    const detectedLanguage = /[\u0900-\u097F]/.test(spokenText) ? "hi-IN" : voiceLanguage;
+    utterance.lang = detectedLanguage;
+    const availableVoices = window.speechSynthesis.getVoices();
+    utterance.voice = availableVoices.find((voice) => voice.lang.toLowerCase().startsWith(detectedLanguage.toLowerCase())) ?? null;
     utterance.rate = 0.96;
     window.speechSynthesis.speak(utterance);
     setVoiceStatus("Playing the browser's available voice. A dedicated NOVA voice is still being integrated.");
@@ -238,6 +243,18 @@ export function VirtualCompanion({ pathname }: VirtualCompanionProps) {
                   {listening ? <MicOff className="size-3" /> : <Mic className="size-3" />}
                   {listening ? "Stop" : "Speak"}
                 </button>
+                <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  Voice
+                  <select
+                    value={voiceLanguage}
+                    onChange={(event) => setVoiceLanguage(event.target.value as "hi-IN" | "en-IN")}
+                    className="rounded-md border border-border bg-background px-1.5 py-1 text-[10px] text-foreground"
+                    aria-label="Voice recognition language"
+                  >
+                    <option value="hi-IN">हिन्दी</option>
+                    <option value="en-IN">English</option>
+                  </select>
+                </label>
               </div>
             </div>
           </div>
