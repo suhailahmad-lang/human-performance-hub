@@ -17,6 +17,16 @@ Exercise demonstrations are in-platform 3D character animations. External video 
 
 This is a first movement prototype, not a final anatomically detailed character or a verified skeletal rig. Its movement and form still require visual review and refinement before being used as coaching guidance.
 
+## Second procedural asset prototype
+
+- Exercise: push-up
+- Source scene: [Human Performance – Push-Up Animation Asset](https://higgsfield.ai/3d-jutsu/b0294181-09f9-4c48-a6d7-4a675a2fb836)
+- Scene revision: 1
+- Export size: 181,320 bytes
+- Character: same visual system, independently authored push-up movement
+- Movement keys: frames 1, 13, 25, 37 and 49 at 24 fps
+- Structural check: 13 animated character mesh parts confirmed
+
 ## Web integration status
 
 `src/components/Exercise3DAnimation.tsx` provides the model-viewer interface and per-exercise asset registry. The registry remains empty until a reviewed GLB is placed in durable application storage and its stable URL is registered. The signed preview URL returned by the 3D workspace expires and must not be hard-coded into the production app.
